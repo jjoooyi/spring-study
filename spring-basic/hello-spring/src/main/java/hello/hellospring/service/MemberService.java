@@ -5,17 +5,19 @@ import hello.hellospring.repository.MemberRepository;
 import hello.hellospring.repository.MemoryMemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-//@Service
+//@Service - config에 직접 bean 등록해서 사용하기 때문에 주석
+@Transactional // JPA를 사용 시 항상 있어야 한다
 public class MemberService {
 
     private final MemberRepository memberRepository;
     
     // MemberService 생성 시 리포지토리 주입
-//    @Autowired
+//    @Autowired - 지금은 config를 활용하여 직접 bean 관리
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
@@ -31,8 +33,8 @@ public class MemberService {
 //        result.ifPresent(m -> {
 //            throw new IllegalStateException("이미 존재하는 회원입니다.");
 //        });
-        validateDuplicateMember(member); // 중복 회원 검증
 
+        validateDuplicateMember(member); // 중복 회원 검증
         memberRepository.save(member);
         return member.getId();
     }
