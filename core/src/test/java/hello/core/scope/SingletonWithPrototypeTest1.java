@@ -1,12 +1,16 @@
 package hello.core.scope;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Provider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,21 +44,45 @@ public class SingletonWithPrototypeTest1 {
 
     }
 
+    // Provider 이용 - javax
     @Scope("singleton")
     static class ClientBean {
-        private final PrototypeBean prototypeBean; //생성시점에 주입
-
-        @Autowired
-        public ClientBean(PrototypeBean prototypeBean) {
-            this.prototypeBean = prototypeBean;
-        }
+        private Provider<PrototypeBean> prototypeBeanProvider;
 
         public int logic() {
+            PrototypeBean prototypeBean = prototypeBeanProvider.get();
             prototypeBean.addCount();
             return prototypeBean.getCount();
         }
 
     }
+
+//    ObjectFactory, ObjectProvider 사용
+//    @Scope("singleton")
+//    static class ClientBean {
+//        private ObjectProvider<PrototypeBean> prototypeBeanProvider;
+//
+//        public int logic() {
+//            PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
+//            prototypeBean.addCount();
+//            return prototypeBean.getCount();
+//        }
+//    }
+
+//    직접 DL..?
+//    @Scope("singleton")
+//    static class ClientBean {
+//
+//        @Autowired
+//        private ApplicationContext ac;
+//
+//        public int logic() {
+//            //메소드 조회할 때 마다 프로토 타입 빈 조회하면서 새로 생성하여 주입
+//            PrototypeBean prototypeBean = ac.getBean(PrototypeBean.class);
+//            prototypeBean.addCount();
+//            return prototypeBean.getCount();
+//        }
+//    }
 
     @Scope("prototype")
     static class PrototypeBean {
