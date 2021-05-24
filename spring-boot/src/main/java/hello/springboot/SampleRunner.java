@@ -1,5 +1,6 @@
 package hello.springboot;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -16,11 +17,20 @@ public class SampleRunner implements ApplicationRunner { //애플리케이션 �
     @Value("${jooyi.age}")
     private int age;
 
+    @Autowired
+    JooyiProperties jooyiProperties;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("============");
         System.out.println(name);
         System.out.println(age);
+        System.out.println("============");
+
+        System.out.println("============");
+        System.out.println(jooyiProperties.getName());
+        System.out.println(jooyiProperties.getAge());
+        System.out.println(jooyiProperties.getSessionTimeout());
         System.out.println("============");
     }
 }
