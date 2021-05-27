@@ -24,7 +24,7 @@ public class UserControllerTest {
                 .andExpect(content().string("hello"));
     }
 
-    @Test
+    @Test // 주로... json
     public void createUser_JSON() throws Exception {
         String userJson = "{\"username\":\"joy\", \"password\":\"1234\"}";
         mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
@@ -36,7 +36,7 @@ public class UserControllerTest {
                     .andExpect(jsonPath("$.password", is(equalTo("1234"))));
     }
 
-    @Test
+    @Test //요청 JSON, 응답 XML, pom.xml 에 dependency 추가(XML 메시지 컨버터 추가)
     public void createUser_XML() throws Exception {
         String userJson = "{\"username\":\"joy\", \"password\":\"1234\"}";
         mockMvc.perform(MockMvcRequestBuilders.post("/users/create")

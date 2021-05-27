@@ -22,6 +22,20 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- XMLMessageConverter -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+
+        <!-- jQuery webjar -->
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>jquery</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
