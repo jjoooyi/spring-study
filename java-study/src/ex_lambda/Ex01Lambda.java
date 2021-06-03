@@ -1,4 +1,4 @@
-package ex14_0;
+package ex_lambda;
 
 public class Ex01Lambda {
     public static void main(String[] args) {

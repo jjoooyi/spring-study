@@ -1,7 +1,6 @@
-package ex14_0;
+package ex_lambda;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class Ex06MethodRef {
     public static void main(String[] args) {

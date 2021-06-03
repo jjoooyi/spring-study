@@ -1,4 +1,4 @@
-package ex14_0;
+package ex_lambda;
 
 @FunctionalInterface
 interface MyFunction3 {
