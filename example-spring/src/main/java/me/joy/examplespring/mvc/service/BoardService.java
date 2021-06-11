@@ -6,7 +6,9 @@ import me.joy.examplespring.mvc.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 게시판 service
@@ -48,6 +50,24 @@ public class BoardService {
         }
     }
 
+    /**
+     * 단순 반복문을 이용한 등록 처리
+     */
+    public void saveList1(List<BoardParameter> boardList) {
+        for(BoardParameter parameter : boardList) {
+            repository.save(parameter);
+        }
+    }
+
+    /**
+     * 100개씩 배열에 담아서 일괄 등록 처리
+     */
+    public void saveList2(List<BoardParameter> boardList) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("boardList", boardList);
+        repository.saveList(paramMap);
+    }
+    
     /**
      * 삭제 처리
      * @param boardSeq

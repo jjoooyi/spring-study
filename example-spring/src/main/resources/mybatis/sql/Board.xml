@@ -6,27 +6,36 @@
 <mapper namespace="me.joy.examplespring.mvc.repository.BoardRepository">
     <select id="getList" parameterType="me.joy.examplespring.mvc.domain.Board" resultType="me.joy.examplespring.mvc.domain.Board">
         select
-            b.board_seq, b.title, b.contents, b.reg_date
+            b.board_seq, b.board_type, b.title, b.contents, b.reg_date
         from t_board b
         order by b.reg_date desc
     </select>
 
     <select id="get" parameterType="int" resultType="me.joy.examplespring.mvc.domain.Board">
         select
-            b.board_seq, b.title, b.contents, b.reg_date
+            b.board_seq, b.board_type, b.title, b.contents, b.reg_date
         from t_board b
         where b.board_seq = #{boardSeq}
         order by b.reg_date desc
     </select>
 
     <insert id="save" parameterType="me.joy.examplespring.mvc.parameter.BoardParameter" useGeneratedKeys="true" keyProperty="boardSeq">
+        insert into t_board (board_type, title, contents, reg_date)
+        values (#{boardType.code}, #{title}, #{contents}, now())
+    </insert>
+
+    <insert id="saveList" parameterType="map">
         insert into t_board (title, contents, reg_date)
-        values (#{title}, #{contents}, now())
+        values
+        <foreach collection="boardList" item="board" separator=",">
+            (#{board.title}, #{board.contents}, now())
+        </foreach>
     </insert>
 
     <update id="update" parameterType="me.joy.examplespring.mvc.parameter.BoardParameter">
         update t_board
         set
+            board_type = #{boardType.code}
             title = #{title},
             contents = #{contents}
         where board_seq = #{boardSeq}
