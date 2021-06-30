@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>투표 창</h1>
+<form action="/vote/form" method="post" id="voteForm">
+    <table>
+        <tr>
+            <td>투표명</td>
+            <td th:text="${vote.voteTitle}"></td>
+        </tr>
+        <tr><td>후보명</td><td></td></tr>
+        <tr th:each="option : ${options}">
+            <td>
+                <input type="radio" name="optionId" th:value="${option.optionId}">
+            </td>
+            <td th:text="${option.optionTitle}"></td>
+            <td th:text="${option.optionContent}"></td>
+        </tr>
+    </table>
+    <button type="button" th:onclick="sendForm()">투표하기</button>
+</form>
+<script type="text/javascript">
+    const sendForm = () => {
+        const voteId = '[[${vote.voteId}]]'
+        const memberId = 'userA';
+        let optionId = null;
+        if(document.querySelector("input[name='optionId']:checked") == null) {
+            alert("후보를 선택해주세요.")
+            return false;
+        } else {
+            optionId = document.querySelector("input[name='optionId']:checked").value;
+        }
+        isExistAnswer(voteId, optionId, memberId)
+    }
+
+    const isExistAnswer = (voteId, optionId, memberId) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/vote/check?voteId=' + voteId + '&memberId=' + memberId);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send();
+        xhr.addEventListener('load', function () {
+            let isExist = xhr.response;
+            isExist = (isExist === 'true')
+            console.log(isExist);
+            if (isExist) {
+                alert("이미 투표에 참여하셨습니다.");
+                document.location.href = '[[@{/vote}]]'
+            } else {
+                const voteForm = document.querySelector("#voteForm");
+                const memberId = document.createElement("input");
+                memberId.type = "hidden";
+                memberId.name = "memberId";
+                memberId.value = 'userA';
+                const voteId = document.createElement("input");
+                voteId.type = "hidden";
+                voteId.name = "voteId";
+                voteId.value = '[[${vote.voteId}]]'
+
+                voteForm.appendChild(memberId);
+                voteForm.appendChild(voteId);
+
+                voteForm.submit();
+            }
+        })
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/vote/add" method="post" id="voteForm">
+    <div><label for="voteTitle">투표 명</label>
+        <input type="text" id="voteTitle" name="voteTitle" placeholder="투표 명을 입력하세요" required="required">
+    </div>
+    <div>
+        <p>투표 유형</p>
+        <label><span>일반 투표: </span><input type="radio" name="voteType" value="BASIC" checked></label>
+        <label><span>/ 후보 투표: </span><input type="radio" name="voteType" value="CANDIDATE"></label>
+        <label><span>/ 찬반 투표: </span><input type="radio" name="voteType" value="CROSS"></label>
+    </div>
+    <div>
+        <p>투표 범위</p>
+        <label><span>전체: </span><input type="radio" name="voteRange" value="1" checked></label>
+        <label><span>/ 동: </span><input type="radio" name="voteRange" value="2"></label>
+        <label><span>/ 라인: </span><input type="radio" name="voteRange" value="3"></label>
+    </div>
+    <div>
+        <span>투표 상태</span>
+        <select name="voteStatus" id="voteStatus">
+            <option value="1">준비</option>
+            <option value="2">진행</option>
+            <option value="3">종료</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="startDate">투표 시작일</label>
+        <input type="date" min="${today }" id="startDate" name="startDate" onchange="validateDate()" required="required"/><br>
+        <label for="endDate">투표 종료일</label>
+        <input type="date" min="${today }" id="endDate" name="endDate" onchange="validateDate()" required="required"/>
+    </div>
+    <div><label for="voteContent">투표 내용</label>
+        <textarea type="text" id="voteContent" name="voteContent" placeholder="투표 내용을 입력하세요"></textarea>
+    </div>
+    <hr>
+    <div>
+        <span>후보 추가</span>
+        <button onclick="addOption()" type="button">+</button>
+        <ul id="options"></ul>
+    </div>
+    <div>
+        <button type="button" onclick="sendForm()">투표 등록</button>
+        <button
+                onclick="location.href='votes.html'"
+                th:onclick="|location.href='@{/vote}'|"
+                type="button">취소
+        </button>
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1; //January is 0!
+    let yyyy = today.getFullYear();
+    if (dd < 10) {
+        dd = '0' + dd
+    }
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+    today = yyyy + '-' + mm + '-' + dd;
+    document.getElementById("startDate").setAttribute("min", today);
+    document.getElementById("endDate").setAttribute("min", today);
+
+    function addOption() {
+        const li = document.createElement("li");
+
+        const optionTitle = document.createElement("input");
+        optionTitle.type = "text";
+        optionTitle.placeholder = "선택지를 입력하세요";
+        optionTitle.name = "optionTitle";
+        optionTitle.setAttribute("required", "required");
+        const optionContent = document.createElement("textarea");
+        optionContent.placeholder = "선택지 상세내용"
+        optionContent.name = "optionContent";
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        const t = document.createTextNode("-")
+        deleteButton.appendChild(t);
+        deleteButton.onclick = function () {
+            this.parentNode.remove();
+        };
+
+        const options = document.querySelector("#options");
+        li.appendChild(optionTitle);
+        li.appendChild(document.createElement("br"));
+        li.appendChild(optionContent);
+        li.appendChild(deleteButton);
+        options.appendChild(li);
+    }
+
+    function validateDate() {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+
+        if( Date.parse(endDate) < Date.parse(startDate) ) {
+            document.getElementById("endDate").value = "";
+            alert('종료일은 시작일 이후여야 합니다.');
+        }
+    }
+
+    function sendForm() {
+        const vote = new Object();
+        vote.voteTitle = document.querySelector("#voteTitle").value;
+        vote.voteType = document.querySelector("input[name='voteType']:checked").value;
+        vote.voteRange = document.querySelector("input[name='voteRange']:checked").value;
+        vote.startDate = document.querySelector("#startDate").value;
+        vote.endDate = document.querySelector("#endDate").value;
+        vote.voteContent = document.querySelector("#voteContent").value;
+        vote.voteStatus = document.querySelector("#voteStatus option:checked").value;
+
+        const options = new Array();
+
+        document.querySelectorAll("#options li").forEach(function(elem, index) {
+            const option = new Object();
+            option.optionTitle = document.getElementsByName("optionTitle").item(index).value;
+            option.optionContent = document.getElementsByName("optionContent").item(index).value;
+            options.push(option);
+        })
+
+        vote.options = options;
+
+        const voteForm = document.querySelector("#voteForm");
+        const param = document.createElement("input");
+        param.setAttribute("type", "hidden");
+        param.setAttribute("name", "param");
+        param.setAttribute("value", JSON.stringify(vote));
+        voteForm.appendChild(param)
+
+        document.querySelector("#voteForm").submit();
+    }
+</script>
+</body>
+</html>

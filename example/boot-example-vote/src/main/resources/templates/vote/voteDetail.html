@@ -1,0 +1,41 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div>
+    <div>
+        <h3>투표 상세</h3>
+    </div>
+
+    <h3 th:if="${param.status}" th:text="'저장 완료'"></h3>
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <td th:text="${vote.voteId}"></td>
+                <td th:text="${vote.voteTitle}"></td>
+                <td th:text="${#dates.format(vote.startDate, 'yyyy-MM-dd')} + '~' + ${#dates.format(vote.endDate, 'yyyy-MM-dd')}"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${vote.voteContent}"></td>
+            </tr>
+            <tr th:each="option : ${options}">
+                <td th:text="${option.optionId}"></td>
+                <td th:text="${option.optionTitle}"></td>
+            </tr>
+            </tbody>
+        </table>
+        <button th:onclick="|location.href='@{/vote/form/{voteId}(voteId=${vote.voteId})}'|">투표하기</button>
+        <button th:onclick="|location.href='@{/vote/edit/{voteId}(voteId=${vote.voteId})}'|">수정하기</button>
+    </div>
+</div>
+</body>
+</html>

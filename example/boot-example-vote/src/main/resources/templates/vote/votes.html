@@ -1,0 +1,41 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div>
+    <div>
+        <h3>투표 목록</h3>
+    </div>
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>투표 명</th>
+                <th>투표 유형</th>
+                <th>투표 범위</th>
+                <th>투표 일</th>
+                <th>투표 상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="vote : ${votes}">
+                <td th:text="${vote.voteId}"></td>
+                <td th:text="${vote.voteTitle}"></td>
+                <td th:text="${vote.voteType}"></td>
+                <td th:text="${vote.voteRange}"></td>
+                <td th:text="${#dates.format(vote.startDate, 'yyyy-MM-dd')} + '~' + ${#dates.format(vote.endDate, 'yyyy-MM-dd')}"></td>
+                <td th:text="${vote.voteStatus}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

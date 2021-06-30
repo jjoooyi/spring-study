@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.joy.vote.VoteRepository">
+    <select id="getList" resultType="me.joy.vote.domain.Vote">
+        SELECT
+               VOTE_ID,
+               VOTE_TITLE,
+               VOTE_CONTENT,
+               VOTE_TYPE,
+               VOTE_RANGE,
+               START_DATE,
+               END_DATE,
+               VOTE_STATUS
+        FROM VOTE
+        ORDER BY VOTE_ID DESC
+    </select>
+    
+    <select id="getVote" parameterType="long" resultType="me.joy.vote.domain.Vote">
+        SELECT
+               VOTE_ID,
+               VOTE_TITLE,
+               VOTE_CONTENT,
+               VOTE_TYPE,
+               VOTE_RANGE,
+               START_DATE,
+               END_DATE,
+               VOTE_STATUS
+        FROM VOTE
+        WHERE VOTE_ID = #{voteId}
+    </select>
+
+    <select id="getOptions" parameterType="long" resultType="me.joy.vote.domain.VoteOption">
+        SELECT
+               OPTION_ID,
+               VOTE_ID,
+               OPTION_TITLE,
+               OPTION_CONTENT
+        FROM VOTE_OPTION
+        WHERE VOTE_ID = #{voteId}
+        ORDER BY OPTION_ID
+    </select>
+
+    <select id="getAnswer" parameterType="long" resultType="map">
+        SELECT
+               VOTE_ID,
+               OPTION_TITLE,
+               RESULT
+        FROM (
+                SELECT O.VOTE_ID, O.OPTION_TITLE, COUNT(*) AS 'RESULT'
+                FROM VOTE_ANSWER A, VOTE_OPTION O
+                WHERE A.VOTE_ID = O.VOTE_ID
+                GROUP BY OPTION_TITLE
+                ORDER BY O.VOTE_ID
+            ) T
+        WHERE T.VOTE_ID = #{voteId};
+    </select>
+    
+    <select id="isExistAnswer" parameterType="me.joy.vote.domain.VoteAnswer" resultType="boolean">
+        SELECT
+               IF(COUNT(*)>0, 1, 0)
+        FROM VOTE_ANSWER
+        WHERE VOTE_ID = #{voteId}
+          AND MEMBER_ID = #{memberId}
+    </select>
+
+    <insert id="addVote" parameterType="me.joy.vote.domain.Vote" useGeneratedKeys="true" keyProperty="voteId">
+        INSERT INTO VOTE
+            (
+                 VOTE_TITLE,
+                 VOTE_CONTENT,
+                 VOTE_TYPE,
+                 VOTE_RANGE,
+                 START_DATE,
+                 END_DATE,
+                 VOTE_STATUS
+             )
+        VALUES
+            (
+                #{voteTitle},
+                #{voteContent},
+                #{voteType},
+                #{voteRange},
+                #{startDate},
+                #{endDate},
+                #{voteStatus}
+            )
+    </insert>
+
+    <insert id="addVoteOptions" parameterType="java.util.List">
+        INSERT INTO VOTE_OPTION
+            (
+                 VOTE_ID,
+                 OPTION_TITLE,
+                 OPTION_CONTENT
+             )
+        VALUES
+        <foreach collection="list" item="item" separator=", ">
+            (
+                 #{item.voteId},
+                 #{item.optionTitle},
+                 #{item.optionContent}
+             )
+        </foreach>
+    </insert>
+
+    <insert id="saveAnswer" parameterType="me.joy.vote.domain.VoteAnswer">
+        INSERT INTO VOTE_ANSWER
+            (
+                VOTE_ID,
+                MEMBER_ID,
+                OPTION_ID
+            )
+        VALUES
+            (
+                #{voteId},
+                #{memberId},
+                #{optionId}
+            )
+    </insert>
+
+    <update id="updateVote" parameterType="me.joy.vote.domain.Vote">
+        UPDATE VOTE
+        SET
+            VOTE_TITLE = #{voteTitle},
+            VOTE_CONTENT = #{voteContent},
+            VOTE_TYPE = #{voteType},
+            VOTE_RANGE = #{voteRange},
+            START_DATE = #{startDate},
+            END_DATE = #{endDate},
+            VOTE_STATUS = #{voteStatus}
+        WHERE VOTE_ID = #{voteId}
+    </update>
+
+    <delete id="deleteAnswer" parameterType="me.joy.vote.domain.VoteAnswer">
+        DELETE FROM VOTE_ANSWER
+        WHERE VOTE_ID = #{voteId}
+          AND MEMBER_ID = #{memberId}
+          AND OPTION_ID = #{optionId}
+    </delete>
+
+    <delete id="deleteOptions" parameterType="long">
+        DELETE FROM VOTE_OPTION
+        WHERE VOTE_ID = #{voteId}
+    </delete>
+
+    <delete id="deleteVote" parameterType="long">
+        DELETE FROM VOTE
+        WHERE VOTE_ID = #{voteId}
+    </delete>
+</mapper>
