@@ -29,8 +29,11 @@ public class User {
     @Column(nullable = false, length = 50)
     private String email;
 
-    @ColumnDefault("'user'")
-    private String role; // Enum 을 쓰는 게 좋다. // admin, user, manager // 도메인(범위)을 설정 가능
+//    @ColumnDefault("'user'")
+//    private String role; // Enum 을 쓰는 게 좋다. // admin, user, manager // 도메인(범위)을 설정 가능
+    // DB는 RoleType 이라는 게 없다 => @Enumerated(EnumType.STRING) 어노테이션 추가
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     @CreationTimestamp // 시간 자동 입력
     private Timestamp createDate; // updateDate 도 보통은 사용
